@@ -112,8 +112,6 @@ body {
 
 .lightbox__button {
   position: absolute;
-  top: 8px;
-  right: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,10 +126,27 @@ body {
   cursor: pointer;
   transition: background-color var(--animation-duration) var(--timing-function);
   outline: none;
-  background-image: url('../images/icon-close.svg');
   background-position: center;
   background-size: 60%;
   background-repeat: no-repeat;
+}
+
+.button__close {
+  top: 8px;
+  right: 8px;
+  background-image: url('../images/icon-close.svg');
+}
+
+.button__left {
+  top: 50%;
+  left: 8px;
+  background-image: url('../images/icon-left.svg');
+}
+
+.button__right {
+  top: 50%;
+  right: 8px;
+  background-image: url('../images/icon-right.svg');
 }
 
 .lightbox__button:hover,
