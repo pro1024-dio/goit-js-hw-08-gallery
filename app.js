@@ -66,89 +66,82 @@ const galleryItems = [
 
 const ISOPEN_CLASS_NAME = 'is-open';
 const gallery = document.querySelector("ul.gallery.js-gallery");
-let currentImage;
+let currentImageNode;
 
 //генеруємо шаблонний рядок для рендеру елементів галереї зображень
 const createTamplate = () => galleryItems.map(elm => `<li class="gallery__item"><a class="gallery__link" href="${elm.original}"><img class="gallery__image" src="${elm.preview}" data-source="${elm.original}" alt="${elm.description}" /></a></li>`).join("");
 
-// const handlerClick = event => {
-//   const elm = event.target;
-//   const curElm = event.currentTarget;
-//   const lightbox = document.querySelector("div.lightbox");
-//   const lightboxImg = document.querySelector(".lightbox__image");
+function closeLightbox() {
+  const lightbox = document.querySelector("div.lightbox");
+  const lightboxImg = lightbox.querySelector(".lightbox__image")
 
-//   function closeLightbox() {
-//     lightbox.classList.remove(ISOPEN_CLASS_NAME);
-//     lightboxImg.src = "";
-//     lightboxImg.alt = "";
-//     lightbox.removeEventListener('click', handlerClick);
-//     document.removeEventListener('keyup', handlerClick);
-//   };
+  lightbox.classList.remove(ISOPEN_CLASS_NAME);
+  lightboxImg.src = "";
+  lightboxImg.alt = "";
+  lightbox.removeEventListener('click', handleLightboxClick);
+  document.removeEventListener('keyup', handleDocumentKeyup);
+  currentImageNode = null;
+};
 
-//   function showBigImage(elm) {
-//     lightboxImg.src = elm.dataset.source;
-//     lightboxImg.alt = elm.alt;
-//   };
+function showBigImage(imdSource, imgDestination) {
+  imgDestination.src = imdSource.dataset.source;
+  imgDestination.alt = imdSource.alt;
+};
 
-//   event.stopImmediatePropagation();
-//   if (curElm.nodeName === "A") {
-//     event.preventDefault();
-//   };
-
-//   if (event.type === 'keyup' && event.code === 'Escape') closeLightbox();
-
-//   if (elm.nodeName === "BUTTON") {
-//     switch (elm.dataset.action) {
-//       case "close-lightbox":
-//         closeLightbox();
-//         break;
-//       case "left-lightbox":
-//         currentImage = currentImage.parentElement.parentElement.previousElementSibling.querySelector("." + currentImage.className);
-//         showBigImage(currentImage);
-//         break;
-//       case "right-lightbox":
-//         currentImage = currentImage.parentElement.parentElement.nextElementSibling.querySelector("." + currentImage.className);
-//         showBigImage(currentImage);
-//         break;
-//     };
-//   };
-
-//   if (elm.nodeName === "DIV" && elm.classList.contains("lightbox__overlay")) closeLightbox();
-//   if (elm.classList.contains("lightbox__image") || elm.classList.contains("lightbox__content")) {
-//     closeLightbox();
-//     return;
-//     };
-
-//   if (elm.nodeName === "IMG") {
-  
-//     //відображаємо модальне вікно та ініціалізуємо його елементи
-//     lightbox.classList.add(ISOPEN_CLASS_NAME);
-//     lightbox.addEventListener('click', handlerClick);
-//     document.addEventListener('keyup', handlerClick);
-
-//     //відображаємо поточне зображення
-//     showBigImage(elm);
-
-//     //зберігаємо поточне відкрите зображення
-//     currentImage = elm;
-    
-//   };
-// };
-
-const handlerImgClick = (event) => {
+const handleLightboxClick = (event) => {
   const elm = event.target;
-  //const curElm = event.currentTarget;
+  const lightbox = document.querySelector("div.lightbox");
+  
+  if (elm.nodeName === "BUTTON") {
+    switch (elm.dataset.action) {
+      case "close-lightbox":
+        closeLightbox();
+        break;
+      case "left-lightbox":
+        currentImageNode = (currentImageNode.previousElementSibling !== null) ? currentImageNode.previousElementSibling : gallery.lastElementChild;
+        showBigImage(currentImageNode.querySelector("img.gallery__image"), lightbox.querySelector("img.lightbox__image"));
+        break;
+      case "right-lightbox":
+        currentImageNode = (currentImageNode.nextElementSibling !== null) ? currentImageNode.nextElementSibling : gallery.firstElementChild;
+        showBigImage(currentImageNode.querySelector("img.gallery__image"), lightbox.querySelector("img.lightbox__image"));
+        break;
+    };
+  }
+  else closeLightbox();
+};
+
+const handleDocumentKeyup = (event) => {
+  
+  if (event.code === 'Escape') closeLightbox();
+    
+};
+
+const handleGalleryClick = (event) => {
+  const elm = event.target;
+  const lightbox = document.querySelector("div.lightbox");
 
   event.preventDefault();
+
+  if (elm.nodeName === "IMG") {
+  
+    //відображаємо модальне вікно та ініціалізуємо його елементи
+    lightbox.classList.add(ISOPEN_CLASS_NAME);
+    lightbox.addEventListener('click', handleLightboxClick);
+    document.addEventListener('keyup', handleDocumentKeyup);
+
+    //відображаємо поточне зображення
+    showBigImage(elm, lightbox.querySelector(".lightbox__image"));
+
+    //зберігаємо поточне відкрите зображення
+    currentImageNode = elm.parentElement.parentElement;
+    
+  };
 };
 
 //виконуємо рендер елементів галереї
 gallery.insertAdjacentHTML('afterbegin', createTamplate());
 
-//ініціалізуємо колекцію зображень
-const galleryImgCollection = gallery.querySelectorAll("li.gallery__item");
-
 //зпускаємо прослуховування подій кліку по зображенню
-gallery.addEventListener('click', handlerImgClick);
+gallery.addEventListener('click', handleGalleryClick);
 
 
