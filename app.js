@@ -68,92 +68,87 @@ const ISOPEN_CLASS_NAME = 'is-open';
 const gallery = document.querySelector("ul.gallery.js-gallery");
 let currentImage;
 
-const createTamplate = element => {
-  return `<li class="gallery__item">
-  <a
-    class="gallery__link"
-    href="${element.original}"
-  >
-    <img
-      class="gallery__image"
-      src="${element.preview}"
-      data-source="${element.original}"
-      alt="${element.description}"
-    />
-  </a>
-</li>`;
-};
+//генеруємо шаблонний рядок для рендеру елементів галереї зображень
+const createTamplate = () => galleryItems.map(elm => `<li class="gallery__item"><a class="gallery__link" href="${elm.original}"><img class="gallery__image" src="${elm.preview}" data-source="${elm.original}" alt="${elm.description}" /></a></li>`).join("");
 
-const handlerClick = event => {
-  const elm = event.target;
-  const curElm = event.currentTarget;
-  const lightbox = document.querySelector("div.lightbox");
-  const lightboxImg = document.querySelector(".lightbox__image");
+// const handlerClick = event => {
+//   const elm = event.target;
+//   const curElm = event.currentTarget;
+//   const lightbox = document.querySelector("div.lightbox");
+//   const lightboxImg = document.querySelector(".lightbox__image");
 
-  function closeLightbox() {
-    lightbox.classList.remove(ISOPEN_CLASS_NAME);
-    lightboxImg.src = "";
-    lightboxImg.alt = "";
-    lightbox.removeEventListener('click', handlerClick);
-    document.removeEventListener('keyup', handlerClick);
-  };
+//   function closeLightbox() {
+//     lightbox.classList.remove(ISOPEN_CLASS_NAME);
+//     lightboxImg.src = "";
+//     lightboxImg.alt = "";
+//     lightbox.removeEventListener('click', handlerClick);
+//     document.removeEventListener('keyup', handlerClick);
+//   };
 
-  function showBigImage(elm) {
-    lightboxImg.src = elm.dataset.source;
-    lightboxImg.alt = elm.alt;
-  };
+//   function showBigImage(elm) {
+//     lightboxImg.src = elm.dataset.source;
+//     lightboxImg.alt = elm.alt;
+//   };
 
-  event.stopImmediatePropagation();
-  if (curElm.nodeName === "A") {
-    event.preventDefault();
-  };
+//   event.stopImmediatePropagation();
+//   if (curElm.nodeName === "A") {
+//     event.preventDefault();
+//   };
 
-  if (event.type === 'keyup' && event.code === 'Escape') closeLightbox();
+//   if (event.type === 'keyup' && event.code === 'Escape') closeLightbox();
 
-  if (elm.nodeName === "BUTTON") {
-    switch (elm.dataset.action) {
-      case "close-lightbox":
-        closeLightbox();
-        break;
-      case "left-lightbox":
-        currentImage = currentImage.parentElement.parentElement.previousElementSibling.querySelector("." + currentImage.className);
-        showBigImage(currentImage);
-        break;
-      case "right-lightbox":
-        currentImage = currentImage.parentElement.parentElement.nextElementSibling.querySelector("." + currentImage.className);
-        showBigImage(currentImage);
-        break;
-    };
-  };
+//   if (elm.nodeName === "BUTTON") {
+//     switch (elm.dataset.action) {
+//       case "close-lightbox":
+//         closeLightbox();
+//         break;
+//       case "left-lightbox":
+//         currentImage = currentImage.parentElement.parentElement.previousElementSibling.querySelector("." + currentImage.className);
+//         showBigImage(currentImage);
+//         break;
+//       case "right-lightbox":
+//         currentImage = currentImage.parentElement.parentElement.nextElementSibling.querySelector("." + currentImage.className);
+//         showBigImage(currentImage);
+//         break;
+//     };
+//   };
 
-  if (elm.nodeName === "DIV" && elm.classList.contains("lightbox__overlay")) closeLightbox();
-  if (elm.classList.contains("lightbox__image") || elm.classList.contains("lightbox__content")) {
-    closeLightbox();
-    return;
-    };
+//   if (elm.nodeName === "DIV" && elm.classList.contains("lightbox__overlay")) closeLightbox();
+//   if (elm.classList.contains("lightbox__image") || elm.classList.contains("lightbox__content")) {
+//     closeLightbox();
+//     return;
+//     };
 
-  if (elm.nodeName === "IMG") {
+//   if (elm.nodeName === "IMG") {
   
-    //відображаємо модальне вікно та ініціалізуємо його елементи
-    lightbox.classList.add(ISOPEN_CLASS_NAME);
-    lightbox.addEventListener('click', handlerClick);
-    document.addEventListener('keyup', handlerClick);
+//     //відображаємо модальне вікно та ініціалізуємо його елементи
+//     lightbox.classList.add(ISOPEN_CLASS_NAME);
+//     lightbox.addEventListener('click', handlerClick);
+//     document.addEventListener('keyup', handlerClick);
 
-    //відображаємо поточне зображення
-    showBigImage(elm);
+//     //відображаємо поточне зображення
+//     showBigImage(elm);
 
-    //зберігаємо поточне відкрите зображення
-    currentImage = elm;
+//     //зберігаємо поточне відкрите зображення
+//     currentImage = elm;
     
-  };
+//   };
+// };
+
+const handlerImgClick = (event) => {
+  const elm = event.target;
+  //const curElm = event.currentTarget;
+
+  event.preventDefault();
 };
 
+//виконуємо рендер елементів галереї
+gallery.insertAdjacentHTML('afterbegin', createTamplate());
 
-const markupArray = galleryItems.map(elm => createTamplate(elm));
-gallery.insertAdjacentHTML('afterbegin', markupArray.join(""));
+//ініціалізуємо колекцію зображень
+const galleryImgCollection = gallery.querySelectorAll("li.gallery__item");
 
-gallery.addEventListener('click', handlerClick);
-gallery.addEventListener('mousedown', handlerClick);
-gallery.addEventListener('mouseup', handlerClick);
+//зпускаємо прослуховування подій кліку по зображенню
+gallery.addEventListener('click', handlerImgClick);
 
 
