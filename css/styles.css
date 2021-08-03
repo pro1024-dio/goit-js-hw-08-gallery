@@ -131,19 +131,19 @@ body {
   background-repeat: no-repeat;
 }
 
-.button__close {
+.lightbox__close {
   top: 8px;
   right: 8px;
   background-image: url('../images/icon-close.svg');
 }
 
-.button__left {
+.lightbox__left {
   top: 50%;
   left: 8px;
   background-image: url('../images/icon-left.svg');
 }
 
-.button__right {
+.lightbox__right {
   top: 50%;
   right: 8px;
   background-image: url('../images/icon-right.svg');
