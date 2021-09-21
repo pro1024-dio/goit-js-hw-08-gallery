@@ -79,7 +79,7 @@ function closeLightbox() {
   lightBoxImg.src = "";
   lightBoxImg.alt = "";
   lightBox.removeEventListener('click', handleLightboxClick);
-  document.removeEventListener('keypress', handleDocumentKeypress);
+  document.removeEventListener('keyup', handleDocumentKeyup);
   // currentImageNode = null;
 };
 
@@ -116,7 +116,7 @@ const handleLightboxClick = (event) => {
   else closeLightbox();
 };
 
-const handleDocumentKeypress = (event) => {
+const handleDocumentKeyup = (event) => {
   
   if (event.code === 'Escape') closeLightbox();
     
@@ -132,7 +132,7 @@ const handleGalleryClick = (event) => {
     //відображаємо модальне вікно та ініціалізуємо його елементи
     lightBox.classList.add(ISOPEN_CLASS_NAME);
     lightBox.addEventListener('click', handleLightboxClick);
-    document.addEventListener('keypress', handleDocumentKeypress);
+    document.addEventListener('keyup', handleDocumentKeyup);
 
     //відображаємо поточне зображення
     showBigImage(galleryItems.findIndex(e => e.original === elm.dataset.source));
