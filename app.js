@@ -66,31 +66,35 @@ const galleryItems = [
 
 const ISOPEN_CLASS_NAME = 'is-open';
 const gallery = document.querySelector("ul.gallery.js-gallery");
-let currentImageNode;
+const lightBox = document.querySelector("div.lightbox");
+const lightBoxImg = lightBox.querySelector("img.lightbox__image");
+// let currentImageNode;
 
 //генеруємо шаблонний рядок для рендеру елементів галереї зображень
 const createTamplate = () => galleryItems.map(elm => `<li class="gallery__item"><a class="gallery__link" href="${elm.original}"><img class="gallery__image" src="${elm.preview}" data-source="${elm.original}" alt="${elm.description}" /></a></li>`).join("");
 
 function closeLightbox() {
-  const lightbox = document.querySelector("div.lightbox");
-  const lightboxImg = lightbox.querySelector(".lightbox__image")
 
-  lightbox.classList.remove(ISOPEN_CLASS_NAME);
-  lightboxImg.src = "";
-  lightboxImg.alt = "";
-  lightbox.removeEventListener('click', handleLightboxClick);
-  document.removeEventListener('keyup', handleDocumentKeyup);
-  currentImageNode = null;
+  lightBox.classList.remove(ISOPEN_CLASS_NAME);
+  lightBoxImg.src = "";
+  lightBoxImg.alt = "";
+  lightBox.removeEventListener('click', handleLightboxClick);
+  document.removeEventListener('keypress', handleDocumentKeypress);
+  // currentImageNode = null;
 };
 
-function showBigImage(imdSource, imgDestination) {
-  imgDestination.src = imdSource.dataset.source;
-  imgDestination.alt = imdSource.alt;
+function showBigImage(index, offset = 0) {
+  let calcIndex = index + offset;
+
+  if (calcIndex < 0) calcIndex = galleryItems.length - 1;
+  if (calcIndex === galleryItems.length) calcIndex = 0;
+  lightBoxImg.src = galleryItems[calcIndex].original;
+  lightBoxImg.alt = galleryItems[calcIndex].description;
 };
 
 const handleLightboxClick = (event) => {
   const elm = event.target;
-  const lightbox = document.querySelector("div.lightbox");
+  
   
   if (elm.nodeName === "BUTTON") {
     switch (elm.dataset.action) {
@@ -98,19 +102,21 @@ const handleLightboxClick = (event) => {
         closeLightbox();
         break;
       case "left-lightbox":
-        currentImageNode = (currentImageNode.previousElementSibling !== null) ? currentImageNode.previousElementSibling : gallery.lastElementChild;
-        showBigImage(currentImageNode.querySelector("img.gallery__image"), lightbox.querySelector("img.lightbox__image"));
+        // currentImageNode = (currentImageNode.previousElementSibling !== null) ? currentImageNode.previousElementSibling : gallery.lastElementChild;
+        // showBigImage(currentImageNode.querySelector("img.gallery__image"), lightBox.querySelector("img.lightbox__image"));
+        showBigImage(galleryItems.findIndex(e => e.original === lightBoxImg.src), -1);
         break;
       case "right-lightbox":
-        currentImageNode = (currentImageNode.nextElementSibling !== null) ? currentImageNode.nextElementSibling : gallery.firstElementChild;
-        showBigImage(currentImageNode.querySelector("img.gallery__image"), lightbox.querySelector("img.lightbox__image"));
+        // currentImageNode = (currentImageNode.nextElementSibling !== null) ? currentImageNode.nextElementSibling : gallery.firstElementChild;
+        // showBigImage(currentImageNode.querySelector("img.gallery__image"), lightbox.querySelector("img.lightbox__image"));
+        showBigImage(galleryItems.findIndex(e => e.original === lightBoxImg.src), 1);
         break;
     };
   }
   else closeLightbox();
 };
 
-const handleDocumentKeyup = (event) => {
+const handleDocumentKeypress = (event) => {
   
   if (event.code === 'Escape') closeLightbox();
     
@@ -118,22 +124,21 @@ const handleDocumentKeyup = (event) => {
 
 const handleGalleryClick = (event) => {
   const elm = event.target;
-  const lightbox = document.querySelector("div.lightbox");
 
   event.preventDefault();
 
   if (elm.nodeName === "IMG") {
   
     //відображаємо модальне вікно та ініціалізуємо його елементи
-    lightbox.classList.add(ISOPEN_CLASS_NAME);
-    lightbox.addEventListener('click', handleLightboxClick);
-    document.addEventListener('keyup', handleDocumentKeyup);
+    lightBox.classList.add(ISOPEN_CLASS_NAME);
+    lightBox.addEventListener('click', handleLightboxClick);
+    document.addEventListener('keypress', handleDocumentKeypress);
 
     //відображаємо поточне зображення
-    showBigImage(elm, lightbox.querySelector(".lightbox__image"));
+    showBigImage(galleryItems.findIndex(e => e.original === elm.dataset.source));
 
-    //зберігаємо поточне відкрите зображення
-    currentImageNode = elm.parentElement.parentElement;
+    // //зберігаємо поточне відкрите зображення
+    // currentImageNode = elm.parentElement.parentElement;
     
   };
 };
